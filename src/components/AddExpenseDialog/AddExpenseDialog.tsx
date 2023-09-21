@@ -3,6 +3,8 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, Stack, Typography } from '@mui/material';
 import React, { useState } from 'react';
+import { Person } from '../../utilities/entity';
+import { calculateExpenseSplitSummary } from '../../utilities';
 
 type Props = {
   open: boolean;
@@ -50,7 +52,9 @@ export default function AddExpenseDialog(props: Props) {
   }
 
   function onSave() {
-    // props.updateExpense()
+    const input = people.map((person) => new Person(person.name, person.amount));
+    const calculatedExpenses = calculateExpenseSplitSummary(input)
+    props.updateExpense(calculatedExpenses);
     props.onClose();
   }
 
