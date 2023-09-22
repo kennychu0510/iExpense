@@ -35,7 +35,7 @@ export default function ExpenseSummary(props: Props) {
           <TableRow>
             <TableCell>Name</TableCell>
             {showDetails && <TableCell align='left'>Paid</TableCell>}
-            <TableCell align='left'>Actions</TableCell>
+            <TableCell align='left' colSpan={showDetails ? 1 : 3}>Actions</TableCell>
             {showDetails && <TableCell align='right'>Summary</TableCell>}
             <TableCell align='right'>Settled</TableCell>
           </TableRow>
@@ -54,7 +54,7 @@ export default function ExpenseSummary(props: Props) {
                   <Typography sx={{ textTransform: 'capitalize' }}>${item.paid}</Typography>
                 </TableCell>
               )}
-              <TableCell align='left'>
+              <TableCell align='left' colSpan={showDetails ? 1 : 3}>
                 <PaymentAction transaction={item.payActions} type='pay' />
                 <PaymentAction transaction={item.receiveActions} type='receive' />
               </TableCell>
