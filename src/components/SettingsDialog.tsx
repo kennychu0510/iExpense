@@ -17,6 +17,7 @@ type Props = {
 export default function SettingsDialog(props: Props) {
   function onClear() {
     props.clearExpenses();
+    props.onClose();
   }
 
   return (
