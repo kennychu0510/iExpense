@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { Dispatch, useState } from 'react';
 import { Checkbox, Stack, Button } from '@mui/material';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -16,12 +16,15 @@ import PaymentIcon from '@mui/icons-material/Payment';
 
 type Props = {
   expense: ExpenseSummary;
+  setExpenses: React.Dispatch<React.SetStateAction<ExpenseSummary[]>>;
 };
 
 export default function ExpenseSummary(props: Props) {
+  const theme = useTheme();
   const [showDetails, setShowDetails] = useState(false);
+  console.log(props.expense.summary);
   return (
-    <TableContainer component={Paper}>
+    <TableContainer component={Paper} elevation={5}>
       <Table aria-label='simple table'>
         <TableHead>
           <TableRow>
@@ -39,7 +42,7 @@ export default function ExpenseSummary(props: Props) {
         </TableHead>
         <TableBody>
           {props.expense.summary.map((item) => (
-            <TableRow key={item.name} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+            <TableRow key={item.name} sx={{ '&:last-child td, &:last-child th': { border: 0 }, backgroundColor: item.settled ? '#4caf50' : undefined }}>
               <TableCell scope='row'>
                 <Stack direction={'row'} gap={1}>
                   {item.paid > 0 ? <AccountBalanceIcon color='primary' /> : <PaymentIcon color='error' />}
@@ -66,7 +69,10 @@ export default function ExpenseSummary(props: Props) {
             </TableRow>
           ))}
           <TableRow>
-            <TableCell colSpan={5} align='right'>
+            <TableCell colSpan={1}>
+              <Typography variant='caption'>{new Date().toDateString()}</Typography>
+            </TableCell>
+            <TableCell colSpan={4} align='right'>
               <Button onClick={() => setShowDetails((state) => !state)}>{showDetails ? 'Hide Details' : 'Show Details'}</Button>
             </TableCell>
           </TableRow>

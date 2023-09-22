@@ -9,6 +9,7 @@ type CostSummary = {
 }[];
 
 interface IPerson {
+  id: string;
   name: string;
   amountToPay: number;
   receiveActions: Map<string, Transaction>;
@@ -16,12 +17,15 @@ interface IPerson {
   paid: number;
   getTotalToReceive: () => number;
   getTotalToPay: () => number;
+  settled: boolean;
+  updateSettlement: () => void;
 }
 
 type ExpenseSummary = {
   id: string;
   expenseName: string;
   summary: IPerson[];
+  date: string;
 };
 
 type PeopleAction = {

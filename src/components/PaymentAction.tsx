@@ -11,7 +11,6 @@ export default function PaymentAction(props: Props) {
     name,
     amount: transaction.amount,
   }));
-  const action = props.type === 'pay' ? 'Pay' : 'Receive';
   if (props.type === 'pay') {
     return (
       <Box>

@@ -29,7 +29,7 @@ function App() {
         </Stack>
         <Stack direction={'column'} flex={1} justifyContent={'space-around'}>
           {expenses.map((expense) => (
-            <ExpenseSummary expense={expense} key={expense.id} />
+            <ExpenseSummary expense={expense} key={expense.id} setExpenses={setExpenses} />
           ))}
           <Stack direction={'row'} justifyContent={'center'}>
             <Button variant='contained' onClick={() => setDialogOpen(true)}>

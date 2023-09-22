@@ -1,11 +1,13 @@
-import { parseAmount, transactionMapToAmountArray } from "./helper";
+import { parseAmount, transactionMapToAmountArray } from './helper';
+import { v4 as uuidv4 } from 'uuid';
 
 export class Person implements IPerson {
   public receiveActions: Map<string, Transaction> = new Map();
   public payActions: Map<string, Transaction> = new Map();
   public amountToPay: number = 0;
+  public settled = false;
 
-  constructor(public name: string, public readonly paid: number) {
+  constructor(public name: string, public readonly paid: number, public id = uuidv4()) {
     if (paid > 0) {
       this.amountToPay = -paid;
     }
@@ -35,15 +37,18 @@ export class Person implements IPerson {
   }
 
   getAmountToPay() {
-    return Number(this.amountToPay.toFixed(2))
+    return Number(this.amountToPay.toFixed(2));
   }
 
   getTotalToReceive() {
-    return transactionMapToAmountArray(this.receiveActions).reduce((prev, cur) => prev + cur, 0)
+    return transactionMapToAmountArray(this.receiveActions).reduce((prev, cur) => prev + cur, 0);
   }
 
   getTotalToPay() {
-    return transactionMapToAmountArray(this.payActions).reduce((prev, cur) => prev + cur, 0)
+    return transactionMapToAmountArray(this.payActions).reduce((prev, cur) => prev + cur, 0);
+  }
+
+  updateSettlement = () => {
+    this.settled = !this.settled;
   }
 }
-

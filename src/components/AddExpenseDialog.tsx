@@ -24,7 +24,7 @@ export default function AddExpenseDialog(props: Props) {
   >([
     {
       name: 'John',
-      amount: 30,
+      amount: 50,
     },
     {
       name: 'Sam',
@@ -62,10 +62,12 @@ export default function AddExpenseDialog(props: Props) {
   function onSave() {
     const input = people.map((person) => new Person(person.name, person.amount));
     const calculatedExpenses = calculateExpenseSplitSummary(input);
+    console.log(calculatedExpenses)
     props.updateExpense({
       expenseName: capitalize(expenseName),
       summary: calculatedExpenses,
       id,
+      date: new Date().toDateString(),
     });
     props.onClose();
   }
@@ -74,7 +76,7 @@ export default function AddExpenseDialog(props: Props) {
     <Dialog open={props.open} onClose={props.onClose}>
       <DialogTitle align='center'>Add Expense</DialogTitle>
       <DialogContent>
-        <Stack gap={2} width={300}>
+        <Stack gap={2}>
           <Typography fontWeight={'bold'}>Description of Expense</Typography>
           <FormControl fullWidth>
             <InputLabel htmlFor='expense'>Expense Name</InputLabel>
