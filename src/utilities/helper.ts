@@ -5,3 +5,7 @@ export function parseAmount(amount: number) {
 export function transactionMapToAmountArray(map: Map<string, Transaction>) {
   return Array.from(map, ([name, transaction]) => (transaction.amount))
 }
+
+export function capitalize(value: string): string {
+  return value.charAt(0).toUpperCase() + value.slice(1)
+}

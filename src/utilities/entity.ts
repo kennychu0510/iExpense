@@ -1,6 +1,6 @@
 import { parseAmount, transactionMapToAmountArray } from "./helper";
 
-export class Person {
+export class Person implements IPerson {
   public receiveActions: Map<string, Transaction> = new Map();
   public payActions: Map<string, Transaction> = new Map();
   public amountToPay: number = 0;

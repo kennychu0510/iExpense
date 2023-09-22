@@ -1,10 +1,11 @@
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import { Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, Stack, Typography } from '@mui/material';
-import React, { useState } from 'react';
-import { Person } from '../../utilities/entity';
-import { calculateExpenseSplitSummary } from '../../utilities';
+import { useTheme, Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, Stack, Typography } from '@mui/material';
+import React, { useId, useState } from 'react';
+import { Person } from '../utilities/entity';
+import { calculateExpenseSplitSummary } from '../utilities';
+import { capitalize } from '../utilities/helper';
 
 type Props = {
   open: boolean;
@@ -13,6 +14,8 @@ type Props = {
 };
 
 export default function AddExpenseDialog(props: Props) {
+  const theme = useTheme();
+  const id = useId();
   const [people, setPeople] = useState<
     {
       name: string;
@@ -20,15 +23,15 @@ export default function AddExpenseDialog(props: Props) {
     }[]
   >([
     {
-      name: 'john',
-      amount: 100,
+      name: 'John',
+      amount: 30,
     },
     {
-      name: 'sam',
+      name: 'Sam',
       amount: 0,
     },
     {
-      name: 'mark',
+      name: 'Mark',
       amount: 0,
     },
   ]);
@@ -40,11 +43,16 @@ export default function AddExpenseDialog(props: Props) {
     setPeople((people) => people.filter((person) => person.name !== name));
   }
 
+  const nameIsError = people.find((person) => person.name.toLocaleLowerCase() === nameInput.toLocaleLowerCase()) !== undefined;
+
   function addPerson() {
+    if (nameIsError) {
+      return;
+    }
     setPeople((people) => [
       ...people,
       {
-        name: nameInput,
+        name: capitalize(nameInput),
         amount: Number(expenseAmount),
       },
     ]);
@@ -53,8 +61,12 @@ export default function AddExpenseDialog(props: Props) {
 
   function onSave() {
     const input = people.map((person) => new Person(person.name, person.amount));
-    const calculatedExpenses = calculateExpenseSplitSummary(input)
-    props.updateExpense(calculatedExpenses);
+    const calculatedExpenses = calculateExpenseSplitSummary(input);
+    props.updateExpense({
+      expenseName: capitalize(expenseName),
+      summary: calculatedExpenses,
+      id,
+    });
     props.onClose();
   }
 
@@ -76,6 +88,7 @@ export default function AddExpenseDialog(props: Props) {
                   <ShoppingCartIcon color='error' />
                 </InputAdornment>
               }
+              autoCapitalize=''
             />
           </FormControl>
 
@@ -93,7 +106,9 @@ export default function AddExpenseDialog(props: Props) {
               }
               value={nameInput}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => setNameInput(event.target.value)}
+              error={nameIsError}
             />
+            {nameIsError && <Typography color={theme.palette.error.main}>Duplicated name</Typography>}
           </FormControl>
           <Stack direction={'row'} justifyContent={'space-between'}>
             <FormControl fullWidth>

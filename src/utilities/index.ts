@@ -6,7 +6,7 @@ export function getTotalCost(people: Person[]) {
   }, 0);
 }
 
-export function splitCost(people: Person[]): ExpenseSummary {
+export function splitCost(people: Person[]): CostSummary {
   const peopleCount = people.length;
   const total = getTotalCost(people);
   const costPerPerson = total / peopleCount;
