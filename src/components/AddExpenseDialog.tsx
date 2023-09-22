@@ -6,11 +6,16 @@ import React, { useId, useState } from 'react';
 import { Person } from '../utilities/entity';
 import { calculateExpenseSplitSummary } from '../utilities';
 import { capitalize } from '../utilities/helper';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 type Props = {
   open: boolean;
   onClose: () => void;
   updateExpense: (expense: ExpenseSummary) => void;
+  defaultValues?: {
+    name: string;
+    amount: number;
+  }[];
 };
 
 export default function AddExpenseDialog(props: Props) {
@@ -21,20 +26,7 @@ export default function AddExpenseDialog(props: Props) {
       name: string;
       amount: number;
     }[]
-  >([
-    {
-      name: 'John',
-      amount: 50,
-    },
-    {
-      name: 'Sam',
-      amount: 0,
-    },
-    {
-      name: 'Mark',
-      amount: 0,
-    },
-  ]);
+  >(props.defaultValues ?? []);
   const [nameInput, setNameInput] = useState('');
   const [expenseName, setExpenseName] = useState('');
   const [expenseAmount, setExpenseAmount] = useState('0');
@@ -44,6 +36,7 @@ export default function AddExpenseDialog(props: Props) {
   }
 
   const nameIsError = people.find((person) => person.name.toLocaleLowerCase() === nameInput.toLocaleLowerCase()) !== undefined;
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   function addPerson() {
     if (nameIsError) {
@@ -73,9 +66,9 @@ export default function AddExpenseDialog(props: Props) {
   }
 
   return (
-    <Dialog open={props.open} onClose={props.onClose} >
+    <Dialog open={props.open} onClose={props.onClose}>
       <DialogTitle align='center'>Add Expense</DialogTitle>
-      <DialogContent sx={{width: 280}}>
+      <DialogContent sx={{ width: isSmallScreen ? 250 : 400 }}>
         <Stack gap={2}>
           <Typography fontWeight={'bold'}>Description of Expense</Typography>
           <FormControl fullWidth>
@@ -131,7 +124,7 @@ export default function AddExpenseDialog(props: Props) {
             </IconButton>
           </Stack>
         </Stack>
-        <Stack pt={2} gap={1} direction={'row'} flexWrap={'wrap'} maxWidth={300}>
+        <Stack pt={2} gap={1} direction={'row'} flexWrap={'wrap'}>
           {people.map((person) => (
             <Chip color={person.amount === 0 ? 'error' : 'primary'} label={`${person.name} - $${person.amount}`} key={person.name} onDelete={() => deletePerson(person.name)} />
           ))}

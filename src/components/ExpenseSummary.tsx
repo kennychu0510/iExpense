@@ -9,7 +9,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { useTheme } from '@mui/material/styles';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import PaymentAction from './PaymentAction';
 import AddExpenseDialog from './AddExpenseDialog';
 
@@ -22,7 +22,22 @@ export default function ExpenseSummary(props: Props) {
   const [showDetails, setShowDetails] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
 
-  function onEdit() {}
+  const onEdit = useCallback(
+    function onEdit(id: string) {
+      return (expense: ExpenseSummary) => {
+        props.setExpenses((expenses) =>
+          expenses.map((exp) => {
+            if (exp.id === id) {
+              return expense;
+            }
+            return exp;
+          })
+        );
+      };
+    },
+    [props.setExpenses]
+  );
+
   return (
     <>
       <Stack gap={1}>
@@ -46,7 +61,7 @@ export default function ExpenseSummary(props: Props) {
             </TableHead>
             <TableBody>
               {props.expense.summary.map((item) => (
-                <TableRow key={item.name} sx={{ '&:last-child td, &:last-child th': { border: 0 }, backgroundColor: item.settled ? '#4caf50' : undefined }}>
+                <TableRow key={item.id} sx={{ '&:last-child td, &:last-child th': { border: 0 }, backgroundColor: item.settled ? '#4caf50' : undefined }}>
                   <TableCell scope='row'>
                     <Stack direction={'row'} gap={1}>
                       {item.paid > 0 ? <AccountBalanceIcon color='primary' /> : <PaymentIcon color='error' />}
@@ -71,6 +86,7 @@ export default function ExpenseSummary(props: Props) {
                     <Checkbox />
                   </TableCell>
                 </TableRow>
+
               ))}
               <TableRow>
                 <TableCell colSpan={1} align='center' width={150}>
@@ -80,14 +96,15 @@ export default function ExpenseSummary(props: Props) {
                   <Typography variant='caption'>{new Date().toDateString()}</Typography>
                 </TableCell>
               </TableRow>
-              {/* <AddExpenseDialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)} /> */}
             </TableBody>
           </Table>
         </TableContainer>
         <Stack direction={'row'} justifyContent={'flex-end'}>
-          <Button onClick={onEdit}>Edit</Button>
+          <Button onClick={() => setEditDialogOpen(true)}>Edit</Button>
         </Stack>
       </Stack>
+      <AddExpenseDialog updateExpense={onEdit(props.expense.id)} open={editDialogOpen} onClose={() => setEditDialogOpen(false)} />
+
     </>
   );
 }
