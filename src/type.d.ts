@@ -15,10 +15,9 @@ interface IPerson {
   receiveActions: Map<string, Transaction>;
   payActions: Map<string, Transaction>;
   paid: number;
-  getTotalToReceive: () => number;
-  getTotalToPay: () => number;
+  totalReceive: number;
+  totalPay: number;
   settled: boolean;
-  updateSettlement: () => void;
 }
 
 type ExpenseSummary = {

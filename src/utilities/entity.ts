@@ -5,12 +5,15 @@ export class Person implements IPerson {
   public receiveActions: Map<string, Transaction> = new Map();
   public payActions: Map<string, Transaction> = new Map();
   public amountToPay: number = 0;
-  public settled = false;
+  public totalReceive = 0;
+  public totalPay = 0;
+  public id: string;
 
-  constructor(public name: string, public readonly paid: number, public id = uuidv4()) {
+  constructor(public name: string, public readonly paid: number, public settled = false) {
     if (paid > 0) {
       this.amountToPay = -paid;
     }
+    this.id = uuidv4();
   }
 
   addAmountToPay(amount: number) {
@@ -40,15 +43,8 @@ export class Person implements IPerson {
     return Number(this.amountToPay.toFixed(2));
   }
 
-  getTotalToReceive() {
-    return transactionMapToAmountArray(this.receiveActions).reduce((prev, cur) => prev + cur, 0);
-  }
-
-  getTotalToPay() {
-    return transactionMapToAmountArray(this.payActions).reduce((prev, cur) => prev + cur, 0);
-  }
-
-  updateSettlement = () => {
-    this.settled = !this.settled;
+  sumUp() {
+    this.totalPay = transactionMapToAmountArray(this.payActions).reduce((prev, cur) => prev + cur, 0);
+    this.totalReceive = transactionMapToAmountArray(this.receiveActions).reduce((prev, cur) => prev + cur, 0);
   }
 }

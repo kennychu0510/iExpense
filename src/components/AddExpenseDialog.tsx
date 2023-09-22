@@ -2,51 +2,62 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { useTheme, Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, Stack, Typography } from '@mui/material';
-import React, { useId, useState } from 'react';
+import React, { useId, useRef, useState } from 'react';
 import { Person } from '../utilities/entity';
 import { calculateExpenseSplitSummary } from '../utilities';
 import { capitalize } from '../utilities/helper';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import useSmallScreen from '../hooks/useSmallScreen';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 
 type Props = {
   open: boolean;
   onClose: () => void;
   updateExpense: (expense: ExpenseSummary) => void;
-  defaultValues?: {
-    name: string;
-    amount: number;
-  }[];
+  defaultValues?: ExpenseSummary;
 };
 
 export default function AddExpenseDialog(props: Props) {
   const theme = useTheme();
-  const id = useId();
+  const randomId = useId();
+  const id = props.defaultValues?.id ?? randomId;
   const [people, setPeople] = useState<
     {
       name: string;
       amount: number;
+      settled: boolean;
     }[]
-  >(props.defaultValues ?? []);
+  >(
+    props.defaultValues?.summary.map((item) => ({
+      name: item.name,
+      amount: item.paid,
+      settled: item.settled
+    })) ?? []
+  );
   const [nameInput, setNameInput] = useState('');
-  const [expenseName, setExpenseName] = useState('');
+  const [expenseName, setExpenseName] = useState(props.defaultValues?.expenseName ?? '');
   const [expenseAmount, setExpenseAmount] = useState('0');
+  const [formError, setFormError] = useState(false);
+  const personInputRef = useRef<HTMLInputElement>(null);
 
   function deletePerson(name: string) {
     setPeople((people) => people.filter((person) => person.name !== name));
   }
 
   const nameIsError = people.find((person) => person.name.toLocaleLowerCase() === nameInput.toLocaleLowerCase()) !== undefined;
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  const isSmallScreen = useSmallScreen();
 
   function addPerson() {
     if (nameIsError) {
       return;
     }
+    setFormError(false);
     setPeople((people) => [
       ...people,
       {
         name: capitalize(nameInput),
         amount: Number(expenseAmount),
+        settled: false
       },
     ]);
     setNameInput('');
@@ -54,7 +65,11 @@ export default function AddExpenseDialog(props: Props) {
   }
 
   function onSave() {
-    const input = people.map((person) => new Person(person.name, person.amount));
+    if (people.length < 1) {
+      setFormError(true);
+      return;
+    }
+    const input = people.map((person) => new Person(person.name, person.amount, person.settled));
     const calculatedExpenses = calculateExpenseSplitSummary(input);
     props.updateExpense({
       expenseName: capitalize(expenseName),
@@ -83,7 +98,7 @@ export default function AddExpenseDialog(props: Props) {
                   <ShoppingCartIcon color='error' />
                 </InputAdornment>
               }
-              autoCapitalize=''
+              onChangeCapture={() => setFormError(false)}
             />
           </FormControl>
 
@@ -102,6 +117,8 @@ export default function AddExpenseDialog(props: Props) {
               value={nameInput}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => setNameInput(event.target.value)}
               error={nameIsError}
+              onChangeCapture={() => setFormError(false)}
+              ref={personInputRef}
             />
             {nameIsError && <Typography color={theme.palette.error.main}>Duplicated name</Typography>}
           </FormControl>
@@ -117,6 +134,7 @@ export default function AddExpenseDialog(props: Props) {
                 type='number'
                 inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                 startAdornment={<InputAdornment position='start'>$</InputAdornment>}
+                onChangeCapture={() => setFormError(false)}
               />
             </FormControl>
             <IconButton color='primary' onClick={addPerson} disabled={!nameInput}>
@@ -129,6 +147,12 @@ export default function AddExpenseDialog(props: Props) {
             <Chip color={person.amount === 0 ? 'error' : 'primary'} label={`${person.name} - $${person.amount}`} key={person.name} onDelete={() => deletePerson(person.name)} />
           ))}
         </Stack>
+        {formError && (
+          <Stack direction={'row'} gap={1} alignItems={'center'}>
+            <ErrorOutlineIcon color='error' />
+            <Typography color={theme.palette.error.main}>Add some people!</Typography>
+          </Stack>
+        )}
       </DialogContent>
       <DialogActions>
         <Stack direction={'row'} justifyContent={'space-between'} width='100%' pb={2} px={2}>

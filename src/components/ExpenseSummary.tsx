@@ -9,34 +9,44 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { useTheme } from '@mui/material/styles';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import PaymentAction from './PaymentAction';
 import AddExpenseDialog from './AddExpenseDialog';
+import useSmallScreen from '../hooks/useSmallScreen';
 
 type Props = {
   expense: ExpenseSummary;
-  setExpenses: React.Dispatch<React.SetStateAction<ExpenseSummary[]>>;
+  updateExpense: (expense: ExpenseSummary) => void;
 };
 
 export default function ExpenseSummary(props: Props) {
   const [showDetails, setShowDetails] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
 
-  const onEdit = useCallback(
-    function onEdit(id: string) {
-      return (expense: ExpenseSummary) => {
-        props.setExpenses((expenses) =>
-          expenses.map((exp) => {
-            if (exp.id === id) {
-              return expense;
-            }
-            return exp;
-          })
-        );
-      };
+  const isSmallScreen = useSmallScreen();
+
+  useEffect(() => {
+    setShowDetails(!isSmallScreen);
+  }, [isSmallScreen]);
+
+  const updateChecked = useCallback(
+    (checked: boolean, id: string) => {
+      props.updateExpense({
+        ...props.expense,
+        summary: props.expense.summary.map((detail) => {
+          if (detail.id === id) {
+            return {
+              ...detail,
+              settled: checked,
+            };
+          }
+          return detail;
+        }),
+      });
     },
-    [props.setExpenses]
+    [props.updateExpense]
   );
+  console.log(props.expense);
 
   return (
     <>
@@ -50,21 +60,33 @@ export default function ExpenseSummary(props: Props) {
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell>Name</TableCell>
-                {showDetails && <TableCell align='left'>Paid</TableCell>}
-                <TableCell align='left' colSpan={showDetails ? 1 : 3}>
-                  Actions
+                <TableCell>
+                  <Typography fontWeight={'bold'}>Name</Typography>
                 </TableCell>
-                {showDetails && <TableCell align='right'>Summary</TableCell>}
-                <TableCell align='right'>Settled</TableCell>
+                {showDetails && (
+                  <TableCell align='left'>
+                    <Typography fontWeight={'bold'}>Paid</Typography>
+                  </TableCell>
+                )}
+                <TableCell align='left' colSpan={showDetails ? 1 : 3}>
+                  <Typography fontWeight={'bold'}>Actions</Typography>
+                </TableCell>
+                {showDetails && (
+                  <TableCell align='left'>
+                    <Typography fontWeight={'bold'}>Summary</Typography>
+                  </TableCell>
+                )}
+                <TableCell align='right'>
+                  <Typography fontWeight={'bold'}>Settled</Typography>
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {props.expense.summary.map((item) => (
-                <TableRow key={item.id} sx={{ '&:last-child td, &:last-child th': { border: 0 }, backgroundColor: item.settled ? '#4caf50' : undefined }}>
+                <TableRow key={item.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                   <TableCell scope='row'>
                     <Stack direction={'row'} gap={1}>
-                      {item.paid > 0 ? <AccountBalanceIcon color='primary' /> : <PaymentIcon color='error' />}
+                      {item.totalReceive > 0 ? <AccountBalanceIcon color='primary' /> : <PaymentIcon color='error' />}
                       <Typography sx={{ textTransform: 'capitalize' }}>{item.name}</Typography>
                     </Stack>
                   </TableCell>
@@ -74,19 +96,23 @@ export default function ExpenseSummary(props: Props) {
                     </TableCell>
                   )}
                   <TableCell align='left' colSpan={showDetails ? 1 : 3}>
-                    <PaymentAction transaction={item.payActions} type='pay' />
-                    <PaymentAction transaction={item.receiveActions} type='receive' />
+                    <PaymentAction settled={item.settled} transaction={item.payActions} type='pay' />
+                    <PaymentAction settled={item.settled} transaction={item.receiveActions} type='receive' />
                   </TableCell>
                   {showDetails && (
-                    <TableCell align='right'>
-                      <TotalAmount amount={item.getTotalToReceive() - item.getTotalToPay()} />
+                    <TableCell align='left'>
+                      <TotalAmount amount={item.totalReceive - item.totalPay}  />
                     </TableCell>
                   )}
                   <TableCell align='right'>
-                    <Checkbox />
+                    <Checkbox
+                      checked={item.settled}
+                      onChange={(e) => {
+                        updateChecked(e.target.checked, item.id);
+                      }}
+                    />
                   </TableCell>
                 </TableRow>
-
               ))}
               <TableRow>
                 <TableCell colSpan={1} align='center' width={150}>
@@ -103,8 +129,7 @@ export default function ExpenseSummary(props: Props) {
           <Button onClick={() => setEditDialogOpen(true)}>Edit</Button>
         </Stack>
       </Stack>
-      <AddExpenseDialog updateExpense={onEdit(props.expense.id)} open={editDialogOpen} onClose={() => setEditDialogOpen(false)} />
-
+      <AddExpenseDialog updateExpense={props.updateExpense} open={editDialogOpen} onClose={() => setEditDialogOpen(false)} defaultValues={props.expense} />
     </>
   );
 }

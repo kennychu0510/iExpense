@@ -45,6 +45,7 @@ export function calculateExpenseSplitSummary(people: Person[]) {
       }
     }
   }
+  people.forEach((person) => person.sumUp());
 
   return people;
 }

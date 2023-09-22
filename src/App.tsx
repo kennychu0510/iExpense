@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import AddExpenseDialog from './components/AddExpenseDialog';
 import { Stack, Typography, Container, Button, IconButton } from '@mui/material';
@@ -19,6 +19,21 @@ function App() {
     setExpenses([]);
   }
 
+  const getUpdateExpense = useCallback(
+    (id: string) => {
+      return (expense: ExpenseSummary) =>
+        setExpenses((expenses) =>
+          expenses.map((exp) => {
+            if (exp.id === id) {
+              return expense;
+            }
+            return exp;
+          })
+        );
+    },
+    [setExpenses]
+  );
+
   return (
     <Container sx={{ height: '100dvh', py: 2 }}>
       <Stack height={'100%'}>
@@ -29,7 +44,7 @@ function App() {
         </Stack>
         <Stack direction={'column'} flex={1} justifyContent={'space-around'}>
           {expenses.map((expense) => (
-            <ExpenseSummary expense={expense} key={expense.id} setExpenses={setExpenses} />
+            <ExpenseSummary expense={expense} key={expense.id} updateExpense={getUpdateExpense(expense.id)} />
           ))}
           <Stack direction={'row'} justifyContent={'center'}>
             <Button variant='contained' onClick={() => setDialogOpen(true)}>
