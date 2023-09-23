@@ -9,6 +9,7 @@ import { capitalize } from '../utilities/helper';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import useSmallScreen from '../hooks/useSmallScreen';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import { v4 as uuidv4 } from 'uuid';
 
 type Props = {
   open: boolean;
@@ -19,8 +20,6 @@ type Props = {
 
 export default function AddExpenseDialog(props: Props) {
   const theme = useTheme();
-  const randomId = useId();
-  const id = props.defaultValues?.id ?? randomId;
   const [people, setPeople] = useState<
     {
       name: string;
@@ -90,7 +89,7 @@ export default function AddExpenseDialog(props: Props) {
     props.updateExpense({
       expenseName: capitalize(expenseName),
       summary: calculatedExpenses,
-      id,
+      id: uuidv4(),
       date: new Date().toDateString(),
       isArchived: false,
     });

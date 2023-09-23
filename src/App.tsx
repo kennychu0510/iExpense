@@ -54,9 +54,8 @@ function App() {
   };
 
   const expensesForDisplay = useMemo(() => {
-    if (activeTab === ActiveTab.Archive) return expenses.filter((expense) => expense.isArchived);
-    return expenses;
-  }, [activeTab]);
+    return expenses.filter((expense) => expense.isArchived === Boolean(activeTab));
+  }, [activeTab, expenses]);
 
   return (
     <ThemeProvider theme={darkTheme}>
@@ -71,7 +70,7 @@ function App() {
             <Tab label='Expenses' id='Expenses' />
             <Tab label='Archive' />
           </Tabs>
-          <Stack direction={'column'} flex={1} justifyContent={'space-around'}>
+          <Stack direction={'column'} flex={1} justifyContent={activeTab ? 'space-between' : 'space-around'}>
             {expensesForDisplay.map((expense) => (
               <ExpenseSummary expense={expense} key={expense.id} updateExpense={getUpdateExpense(expense.id)} deleteExpense={getDeleteExpense(expense.id)} activeTab={activeTab} />
             ))}

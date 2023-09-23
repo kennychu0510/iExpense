@@ -56,12 +56,12 @@ export default function ExpenseSummary(props: Props) {
   );
 
   function archiveExpense() {
-    props.updateExpense({ ...props.expense, isArchived: true });
+    props.updateExpense({ ...props.expense, isArchived: !props.expense.isArchived });
   }
 
   return (
     <>
-      <Stack gap={1} mb={2}>
+      <Stack gap={1} my={2}>
         <TableContainer component={Paper} elevation={5} sx={{ borderWidth: 1, borderColor: theme.palette.primary.main, borderStyle: checked ? 'solid' : 'none' }}>
           <Table aria-label='simple table'>
             <TableHead>
