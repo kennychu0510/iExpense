@@ -25,6 +25,7 @@ type ExpenseSummary = {
   expenseName: string;
   summary: IPerson[];
   date: string;
+  isArchived: boolean;
 };
 
 type PeopleAction = {

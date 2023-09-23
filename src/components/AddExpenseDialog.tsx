@@ -31,22 +31,22 @@ export default function AddExpenseDialog(props: Props) {
     props.defaultValues?.summary.map((item) => ({
       name: item.name,
       amount: item.paid,
-      settled: item.settled
+      settled: item.settled,
     })) ?? [
       {
         name: 'john',
         amount: 100,
-        settled: false
+        settled: false,
       },
       {
         name: 'sam',
         amount: 200,
-        settled: false
+        settled: false,
       },
       {
         name: 'dave',
         amount: 0,
-        settled: false
+        settled: false,
       },
     ]
   );
@@ -73,7 +73,7 @@ export default function AddExpenseDialog(props: Props) {
       {
         name: capitalize(nameInput),
         amount: Number(expenseAmount),
-        settled: false
+        settled: false,
       },
     ]);
     setNameInput('');
@@ -92,13 +92,14 @@ export default function AddExpenseDialog(props: Props) {
       summary: calculatedExpenses,
       id,
       date: new Date().toDateString(),
+      isArchived: false,
     });
     props.onClose();
   }
 
   return (
     <Dialog open={props.open} onClose={props.onClose}>
-      <DialogTitle align='center'>Add Expense</DialogTitle>
+      <DialogTitle align='center'>{!!props.defaultValues ? 'Update Expense' : 'Add Expense'}</DialogTitle>
       <DialogContent sx={{ width: isSmallScreen ? 250 : 400 }}>
         <Stack gap={2}>
           <Typography fontWeight={'bold'}>Description of Expense</Typography>

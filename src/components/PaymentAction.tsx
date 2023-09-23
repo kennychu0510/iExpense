@@ -1,6 +1,7 @@
 import { Stack, Box, Typography, useTheme } from '@mui/material';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+
 type Props = {
   payments: Map<string, Transaction>;
   receive: Map<string, Transaction>;

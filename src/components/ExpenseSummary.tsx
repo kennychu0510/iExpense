@@ -1,6 +1,6 @@
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import PaymentIcon from '@mui/icons-material/Payment';
-import { Button, Checkbox, Stack, Typography } from '@mui/material';
+import { Button, Checkbox, Stack, Typography, IconButton, Box } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -14,17 +14,24 @@ import PaymentActions from './PaymentAction';
 import AddExpenseDialog from './AddExpenseDialog';
 import useSmallScreen from '../hooks/useSmallScreen';
 import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
+import EditIcon from '@mui/icons-material/Edit';
+import ArchiveIcon from '@mui/icons-material/Archive';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { ActiveTab } from '../utilities/constants';
 
 type Props = {
   expense: ExpenseSummary;
   updateExpense: (expense: ExpenseSummary) => void;
+  deleteExpense: () => void;
+  activeTab: ActiveTab;
 };
 
 export default function ExpenseSummary(props: Props) {
   const [showDetails, setShowDetails] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
-
   const isSmallScreen = useSmallScreen();
+  const [checked, setChecked] = useState(false);
+  const theme = useTheme();
 
   useEffect(() => {
     setShowDetails(!isSmallScreen);
@@ -48,15 +55,40 @@ export default function ExpenseSummary(props: Props) {
     [props.updateExpense]
   );
 
+  function archiveExpense() {
+    props.updateExpense({ ...props.expense, isArchived: true });
+  }
+
   return (
     <>
-      <Stack gap={1}>
-        <TableContainer component={Paper} elevation={5}>
+      <Stack gap={1} mb={2}>
+        <TableContainer component={Paper} elevation={5} sx={{ borderWidth: 1, borderColor: theme.palette.primary.main, borderStyle: checked ? 'solid' : 'none' }}>
           <Table aria-label='simple table'>
             <TableHead>
               <TableRow>
                 <TableCell align='center' colSpan={5}>
-                  <Typography fontWeight={'bold'}>{props.expense.expenseName}</Typography>
+                  <Stack direction={'row'} justifyContent={'space-between'} alignItems={'center'} sx={{ position: 'relative' }}>
+                    <Checkbox
+                      value={checked}
+                      onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                        setChecked(event.target.checked);
+                      }}
+                    />
+                    <Typography fontWeight={'bold'}>{props.expense.expenseName}</Typography>
+                    <Stack direction={'row'} gap={1}>
+                      <IconButton onClick={props.deleteExpense}>
+                        <DeleteIcon color={'error'} />
+                      </IconButton>
+                      <IconButton onClick={archiveExpense}>
+                        <ArchiveIcon color='success' />
+                      </IconButton>
+                      {props.activeTab === ActiveTab.Expenses && (
+                        <IconButton onClick={() => setEditDialogOpen(true)}>
+                          <EditIcon color='primary' />
+                        </IconButton>
+                      )}
+                    </Stack>
+                  </Stack>
                 </TableCell>
               </TableRow>
               <TableRow>
@@ -68,7 +100,7 @@ export default function ExpenseSummary(props: Props) {
                     <Typography fontWeight={'bold'}>Paid</Typography>
                   </TableCell>
                 )}
-                <TableCell align='left' colSpan={showDetails ? 1 : 3}>
+                <TableCell align='center' colSpan={showDetails ? 1 : 3}>
                   <Typography fontWeight={'bold'}>Actions</Typography>
                 </TableCell>
                 {showDetails && (
@@ -120,19 +152,19 @@ export default function ExpenseSummary(props: Props) {
                 </TableRow>
               ))}
               <TableRow>
-                <TableCell colSpan={1} align='center' width={150}>
-                  <Button onClick={() => setShowDetails((state) => !state)}>{showDetails ? 'Hide Details' : 'Show Details'}</Button>
-                </TableCell>
-                <TableCell colSpan={4} align='right'>
-                  <Typography variant='caption'>{new Date().toDateString()}</Typography>
+                <TableCell colSpan={5}>
+                  <Stack direction={'row'} justifyContent={'space-between'} alignItems={'center'}>
+                    <Typography variant='caption'>{new Date().toDateString()}</Typography>
+                    <Stack direction={'row'}>
+                      <Button onClick={() => setShowDetails((state) => !state)}>{showDetails ? 'Hide Details' : 'Show Details'}</Button>
+                    </Stack>
+                  </Stack>
+                  <Stack direction={'row'} justifyContent={'space-between'}></Stack>
                 </TableCell>
               </TableRow>
             </TableBody>
           </Table>
         </TableContainer>
-        <Stack direction={'row'} justifyContent={'flex-end'}>
-          <Button onClick={() => setEditDialogOpen(true)}>Edit</Button>
-        </Stack>
       </Stack>
       <AddExpenseDialog updateExpense={props.updateExpense} open={editDialogOpen} onClose={() => setEditDialogOpen(false)} defaultValues={props.expense} />
     </>
