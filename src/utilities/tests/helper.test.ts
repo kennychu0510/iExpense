@@ -1,4 +1,4 @@
-import { test, expect, describe } from 'bun:test';
+import { test, expect, describe } from 'vitest';
 import { transactionMapToAmountArray } from '../helper';
 
 describe('transactionMapToAmountArray', () => {
@@ -8,7 +8,7 @@ describe('transactionMapToAmountArray', () => {
       ['ben', { amount: 10 }],
       ['mark', { amount: 50 }],
     ]);
-    expect(transactionMapToAmountArray(input)).toBeArray();
+    expect(Array.isArray(transactionMapToAmountArray(input))).toBeTruthy();
   });
 
   test('array is correct', () => {

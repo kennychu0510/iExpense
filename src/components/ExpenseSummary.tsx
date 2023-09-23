@@ -10,9 +10,10 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { useTheme } from '@mui/material/styles';
 import React, { useCallback, useEffect, useState } from 'react';
-import PaymentAction from './PaymentAction';
+import PaymentActions from './PaymentAction';
 import AddExpenseDialog from './AddExpenseDialog';
 import useSmallScreen from '../hooks/useSmallScreen';
+import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
 
 type Props = {
   expense: ExpenseSummary;
@@ -46,7 +47,6 @@ export default function ExpenseSummary(props: Props) {
     },
     [props.updateExpense]
   );
-  console.log(props.expense);
 
   return (
     <>
@@ -86,7 +86,13 @@ export default function ExpenseSummary(props: Props) {
                 <TableRow key={item.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                   <TableCell scope='row'>
                     <Stack direction={'row'} gap={1}>
-                      {item.totalReceive > 0 ? <AccountBalanceIcon color='primary' /> : <PaymentIcon color='error' />}
+                      {item.payActions.size === 0 && item.receiveActions.size === 0 ? (
+                        <InsertEmoticonIcon color='secondary' />
+                      ) : item.totalReceive > 0 ? (
+                        <AccountBalanceIcon color='primary' />
+                      ) : (
+                        <PaymentIcon color='error' />
+                      )}
                       <Typography sx={{ textTransform: 'capitalize' }}>{item.name}</Typography>
                     </Stack>
                   </TableCell>
@@ -96,12 +102,11 @@ export default function ExpenseSummary(props: Props) {
                     </TableCell>
                   )}
                   <TableCell align='left' colSpan={showDetails ? 1 : 3}>
-                    <PaymentAction settled={item.settled} transaction={item.payActions} type='pay' />
-                    <PaymentAction settled={item.settled} transaction={item.receiveActions} type='receive' />
+                    <PaymentActions settled={item.settled} payments={item.payActions} receive={item.receiveActions} />
                   </TableCell>
                   {showDetails && (
                     <TableCell align='left'>
-                      <TotalAmount amount={item.totalReceive - item.totalPay}  />
+                      <TotalAmount amount={item.totalReceive - item.totalPay} />
                     </TableCell>
                   )}
                   <TableCell align='right'>
@@ -137,6 +142,10 @@ export default function ExpenseSummary(props: Props) {
 const TotalAmount = ({ amount }: { amount: number }) => {
   const theme = useTheme();
   const isPay = amount > 0;
+
+  if (amount === 0) {
+    return <Typography color={theme.palette.primary.main}>{Math.abs(amount).toFixed(2)}</Typography>;
+  }
   return (
     <Typography color={isPay ? theme.palette.success.main : theme.palette.error.main}>
       {amount > 0 ? '+' : '-'} {Math.abs(amount).toFixed(2)}
