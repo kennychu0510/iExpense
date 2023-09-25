@@ -1,15 +1,14 @@
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import { useTheme, Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, Stack, Typography } from '@mui/material';
-import React, { useId, useRef, useState } from 'react';
-import { Person } from '../utilities/entity';
-import { calculateExpenseSplitSummary } from '../utilities';
-import { capitalize } from '../utilities/helper';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import useSmallScreen from '../hooks/useSmallScreen';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import { Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, Stack, Typography, useTheme } from '@mui/material';
+import React, { useRef, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import useSmallScreen from '../hooks/useSmallScreen';
+import { calculateExpenseSplitSummary } from '../utilities';
+import { Person } from '../utilities/entity';
+import { capitalize } from '../utilities/helper';
 
 type Props = {
   open: boolean;
@@ -98,7 +97,7 @@ export default function AddExpenseDialog(props: Props) {
 
   return (
     <Dialog open={props.open} onClose={props.onClose}>
-      <DialogTitle align='center'>{!!props.defaultValues ? 'Update Expense' : 'Add Expense'}</DialogTitle>
+      <DialogTitle align='center'>{props.defaultValues ? 'Update Expense' : 'Add Expense'}</DialogTitle>
       <DialogContent sx={{ width: isSmallScreen ? 250 : 400 }}>
         <Stack gap={2}>
           <Typography fontWeight={'bold'}>Description of Expense</Typography>

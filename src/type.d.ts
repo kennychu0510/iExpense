@@ -8,12 +8,17 @@ type CostSummary = {
   amountToPay: number;
 }[];
 
+type IAction = {
+  name: string;
+  amount: number
+}
+
 interface IPerson {
   id: string;
   name: string;
   amountToPay: number;
-  receiveActions: Map<string, Transaction>;
-  payActions: Map<string, Transaction>;
+  receives: IAction[]
+  payments: IAction[]
   paid: number;
   totalReceive: number;
   totalPay: number;

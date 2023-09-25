@@ -3,7 +3,7 @@ export function parseAmount(amount: number) {
 }
 
 export function transactionMapToAmountArray(map: Map<string, Transaction>) {
-  return Array.from(map, ([name, transaction]) => (transaction.amount))
+  return Array.from(map, ([_, transaction]) => (transaction.amount))
 }
 
 export function capitalize(value: string): string {

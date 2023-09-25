@@ -1,12 +1,5 @@
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import { useTheme, Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, Stack, Typography } from '@mui/material';
-import React, { useId, useState } from 'react';
-import { Person } from '../utilities/entity';
-import { calculateExpenseSplitSummary } from '../utilities';
-import { capitalize } from '../utilities/helper';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, Typography } from '@mui/material';
 
 type Props = {
   open: boolean;

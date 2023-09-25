@@ -1,6 +1,10 @@
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import ArchiveIcon from '@mui/icons-material/Archive';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
 import PaymentIcon from '@mui/icons-material/Payment';
-import { Button, Checkbox, Stack, Typography, IconButton, Box } from '@mui/material';
+import { Button, Checkbox, IconButton, Stack, Typography } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -10,14 +14,10 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { useTheme } from '@mui/material/styles';
 import React, { useCallback, useEffect, useState } from 'react';
-import PaymentActions from './PaymentAction';
-import AddExpenseDialog from './AddExpenseDialog';
 import useSmallScreen from '../hooks/useSmallScreen';
-import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
-import EditIcon from '@mui/icons-material/Edit';
-import ArchiveIcon from '@mui/icons-material/Archive';
-import DeleteIcon from '@mui/icons-material/Delete';
 import { ActiveTab } from '../utilities/constants';
+import AddExpenseDialog from './AddExpenseDialog';
+import PaymentActions from './PaymentAction';
 
 type Props = {
   expense: ExpenseSummary;
@@ -118,7 +118,7 @@ export default function ExpenseSummary(props: Props) {
                 <TableRow key={item.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                   <TableCell scope='row'>
                     <Stack direction={'row'} gap={1}>
-                      {item.payActions.size === 0 && item.receiveActions.size === 0 ? (
+                      {item.payments.length === 0 && item.receives.length === 0 ? (
                         <InsertEmoticonIcon color='secondary' />
                       ) : item.totalReceive > 0 ? (
                         <AccountBalanceIcon color='primary' />
@@ -134,7 +134,7 @@ export default function ExpenseSummary(props: Props) {
                     </TableCell>
                   )}
                   <TableCell align='left' colSpan={showDetails ? 1 : 3}>
-                    <PaymentActions settled={item.settled} payments={item.payActions} receive={item.receiveActions} />
+                    <PaymentActions settled={item.settled} payments={item.payments} receive={item.receives} />
                   </TableCell>
                   {showDetails && (
                     <TableCell align='left'>

@@ -2,12 +2,14 @@ import { parseAmount, transactionMapToAmountArray } from './helper';
 import { v4 as uuidv4 } from 'uuid';
 
 export class Person implements IPerson {
-  public receiveActions: Map<string, Transaction> = new Map();
-  public payActions: Map<string, Transaction> = new Map();
+  private receiveActionsMap: Map<string, Transaction> = new Map();
+  private payActionsMap: Map<string, Transaction> = new Map();
   public amountToPay: number = 0;
   public totalReceive = 0;
   public totalPay = 0;
   public id: string;
+  public payments: IAction[] = [];
+  public receives: IAction[] = [];
 
   constructor(public name: string, public readonly paid: number, public settled = false) {
     if (paid > 0) {
@@ -25,7 +27,7 @@ export class Person implements IPerson {
     if (this.amountToPay < amount) {
       payAmount = amount - this.amountToPay;
     }
-    this.payActions.set(person, {
+    this.payActionsMap.set(person, {
       amount: parseAmount(payAmount),
     });
     this.amountToPay -= payAmount;
@@ -34,7 +36,7 @@ export class Person implements IPerson {
 
   receive(amount: number, person: string) {
     this.amountToPay += amount;
-    this.receiveActions.set(person, {
+    this.receiveActionsMap.set(person, {
       amount: parseAmount(amount),
     });
   }
@@ -44,7 +46,9 @@ export class Person implements IPerson {
   }
 
   sumUp() {
-    this.totalPay = transactionMapToAmountArray(this.payActions).reduce((prev, cur) => prev + cur, 0);
-    this.totalReceive = transactionMapToAmountArray(this.receiveActions).reduce((prev, cur) => prev + cur, 0);
+    this.totalPay = transactionMapToAmountArray(this.payActionsMap).reduce((prev, cur) => prev + cur, 0);
+    this.totalReceive = transactionMapToAmountArray(this.receiveActionsMap).reduce((prev, cur) => prev + cur, 0);
+    this.receives = Array.from(this.receiveActionsMap, ([name, transaction]) => ({ name, amount: transaction.amount }));
+    this.payments = Array.from(this.payActionsMap, ([name, transaction]) => ({ name, amount: transaction.amount }));
   }
 }

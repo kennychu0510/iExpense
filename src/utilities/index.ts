@@ -30,15 +30,15 @@ export function getAmountToPayForPerson(costPerPerson: number, paidAmount: numbe
 
 export function calculateExpenseSplitSummary(people: Person[]) {
   const costPerPerson = getTotalCost(people) / people.length;
-  for (let person of people) {
+  for (const person of people) {
     person.addAmountToPay(getAmountToPayForPerson(costPerPerson, person.paid));
   }
   const payers = people.filter((person) => person.amountToPay > 0);
   const receivers = people.filter((person) => person.amountToPay < 0);
 
-  for (let receiver of receivers) {
-    let costPerPayer = (receiver.amountToPay * -1) / payers.length;
-    for (let payer of payers) {
+  for (const receiver of receivers) {
+    const costPerPayer = (receiver.amountToPay * -1) / payers.length;
+    for (const payer of payers) {
       const amountPaid = payer.pay(costPerPayer, receiver.name);
       if (amountPaid > 0) {
         receiver.receive(amountPaid, payer.name);

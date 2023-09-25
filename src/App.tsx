@@ -49,7 +49,7 @@ function App() {
     };
   }
 
-  const onChangeTab = (event: React.SyntheticEvent, newValue: number) => {
+  const onChangeTab = (_: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
   };
 
