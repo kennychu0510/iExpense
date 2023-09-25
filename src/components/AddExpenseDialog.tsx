@@ -30,23 +30,7 @@ export default function AddExpenseDialog(props: Props) {
       name: item.name,
       amount: item.paid,
       settled: item.settled,
-    })) ?? [
-      {
-        name: 'john',
-        amount: 100,
-        settled: false,
-      },
-      {
-        name: 'sam',
-        amount: 200,
-        settled: false,
-      },
-      {
-        name: 'dave',
-        amount: 0,
-        settled: false,
-      },
-    ]
+    })) ?? []
   );
   const [nameInput, setNameInput] = useState('');
   const [expenseName, setExpenseName] = useState(props.defaultValues?.expenseName ?? '');
