@@ -12,20 +12,19 @@ export class Person implements IPerson {
   public receives: IAction[] = [];
 
   constructor(public name: string, public readonly paid: number, public settled = false) {
-    if (paid > 0) {
-      this.amountToPay = -paid;
-    }
     this.id = uuidv4();
   }
 
   addAmountToPay(amount: number) {
-    this.amountToPay = amount;
+    this.amountToPay = amount - this.paid;
   }
 
   pay(amount: number, person: string) {
     let payAmount = amount;
-    if (this.amountToPay < amount) {
-      payAmount = amount - this.amountToPay;
+    if (amount <= this.amountToPay) {
+      payAmount = amount;
+    } else {
+      payAmount = this.amountToPay
     }
     this.payActionsMap.set(person, {
       amount: parseAmount(payAmount),

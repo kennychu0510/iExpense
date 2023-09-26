@@ -1,5 +1,5 @@
 import { test, expect, describe } from 'vitest';
-import { calculateExpenseSplitSummary, splitCost } from '../';
+import { calculateExpenseSplitSummary, getCostPerPerson, getTotalCost, splitCost } from '../';
 import { Person } from '../entity';
 
 describe('split cost function', () => {
@@ -127,5 +127,30 @@ describe('Scenario 6: Payers with different amount', () => {
     expect(calculateExpenseSplitSummary(people).find((person) => person.name === name)?.payments).toEqual([{ name: 'ben', amount: 10 }]);
     expect(calculateExpenseSplitSummary(people).find((person) => person.name === name)?.totalReceive).toBe(0);
     expect(calculateExpenseSplitSummary(people).find((person) => person.name === name)?.totalPay).toBe(10);
+  });
+});
+
+describe('Scenario 7: Payers with different amount', () => {
+  const people: Person[] = [new Person('john', 500), new Person('ben', 20), new Person('mark', 0), new Person('dave', 0)];
+  test('amount is settled', () => {
+    expect(calculateExpenseSplitSummary(people).every((person) => Math.round(person.amountToPay) === 0)).toBeTruthy();
+  });
+  test('ben pays john $110', () => {
+    expect(calculateExpenseSplitSummary(people).find((person) => person.name === 'ben')?.payments).toEqual([{name: 'john', amount: 110}])
+  });
+  test('dave pays john $130', () => {
+    expect(calculateExpenseSplitSummary(people).find((person) => person.name === 'dave')?.payments).toEqual([{name: 'john', amount: 130}])
+  });
+  test('mark pays john $130', () => {
+    expect(calculateExpenseSplitSummary(people).find((person) => person.name === 'mark')?.payments).toEqual([{name: 'john', amount: 130}])
+  });
+  test('john receives total of $370', () => {
+    expect(calculateExpenseSplitSummary(people).find((person) => person.name === 'john')?.payments).toEqual([])
+    expect(calculateExpenseSplitSummary(people).find((person) => person.name === 'john')?.receives).toEqual([
+      {name: 'ben', amount: 110},
+      {name: 'mark', amount: 130},
+      {name: 'dave', amount: 130},
+    ])
+    expect(calculateExpenseSplitSummary(people).find((person) => person.name === 'john')?.totalReceive).toEqual(370)
   });
 });
