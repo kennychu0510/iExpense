@@ -80,7 +80,7 @@ export default function AddExpenseDialog(props: Props) {
   }
 
   return (
-    <Dialog open={props.open} onClose={props.onClose}>
+    <Dialog open={props.open} onClose={props.onClose} data-testid='add-expense-dialog'>
       <DialogTitle align='center'>{props.defaultValues ? 'Update Expense' : 'Add Expense'}</DialogTitle>
       <DialogContent sx={{ width: isSmallScreen ? 250 : 400 }}>
         <Stack gap={2}>
@@ -98,6 +98,7 @@ export default function AddExpenseDialog(props: Props) {
                 </InputAdornment>
               }
               onChangeCapture={() => setFormError(false)}
+              data-testid='expense-name-input'
             />
           </FormControl>
 
@@ -118,6 +119,7 @@ export default function AddExpenseDialog(props: Props) {
               error={nameIsError}
               onChangeCapture={() => setFormError(false)}
               ref={personInputRef}
+              data-testid='person-name-input'
             />
             {nameIsError && <Typography color={theme.palette.error.main}>Duplicated name</Typography>}
           </FormControl>
@@ -134,9 +136,10 @@ export default function AddExpenseDialog(props: Props) {
                 inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                 startAdornment={<InputAdornment position='start'>$</InputAdornment>}
                 onChangeCapture={() => setFormError(false)}
+                data-testid='person-amount-input'
               />
             </FormControl>
-            <IconButton color='primary' onClick={addPerson} disabled={!nameInput}>
+            <IconButton color='primary' onClick={addPerson} disabled={!nameInput} data-testid='add-person'>
               <PersonAddIcon />
             </IconButton>
           </Stack>
@@ -158,7 +161,7 @@ export default function AddExpenseDialog(props: Props) {
           <Button onClick={props.onClose} variant='contained' color='error'>
             Cancel
           </Button>
-          <Button variant='contained' color='success' onClick={onSave} autoFocus>
+          <Button variant='contained' color='success' onClick={onSave} autoFocus data-testid='save-expense'>
             Save
           </Button>
         </Stack>

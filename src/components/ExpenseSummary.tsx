@@ -61,7 +61,7 @@ export default function ExpenseSummary(props: Props) {
 
   return (
     <>
-      <Stack gap={1} my={2}>
+      <Stack gap={1} my={2} data-testid='expense-table'>
         <TableContainer component={Paper} elevation={5} sx={{ borderWidth: 1, borderColor: theme.palette.primary.main, borderStyle: checked ? 'solid' : 'none' }}>
           <Table aria-label='simple table'>
             <TableHead>

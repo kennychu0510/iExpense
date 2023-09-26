@@ -76,7 +76,7 @@ function App() {
             ))}
             {activeTab === ActiveTab.Expenses && (
               <Stack direction={'row'} justifyContent={'center'}>
-                <Button variant='contained' onClick={() => setDialogOpen(true)}>
+                <Button variant='contained' onClick={() => setDialogOpen(true)} data-testid='add-expense'>
                   Add Expense
                 </Button>
               </Stack>
