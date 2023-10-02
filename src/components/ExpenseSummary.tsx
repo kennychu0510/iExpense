@@ -24,6 +24,8 @@ type Props = {
   updateExpense: (expense: ExpenseSummary) => void;
   deleteExpense: () => void;
   activeTab: ActiveTab;
+  isChecked: boolean;
+  setIsChecked: () => void;
 };
 
 export default function ExpenseSummary(props: Props) {
@@ -69,10 +71,8 @@ export default function ExpenseSummary(props: Props) {
                 <TableCell align='center' colSpan={5}>
                   <Stack direction={'row'} justifyContent={'space-between'} alignItems={'center'} sx={{ position: 'relative' }}>
                     <Checkbox
-                      value={checked}
-                      onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                        setChecked(event.target.checked);
-                      }}
+                      value={props.isChecked}
+                      onChange={props.setIsChecked}
                     />
                     <Typography fontWeight={'bold'}>{props.expense.expenseName}</Typography>
                     <Stack direction={'row'} gap={1}>

@@ -19,6 +19,7 @@ function App() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [expenses, setExpenses] = useLocalStorage<ExpenseSummary[]>('expenses', []);
   const [activeTab, setActiveTab] = useState(0);
+  const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
 
   function onSave(expense: ExpenseSummary) {
     setExpenses((expenses) => [...expenses, expense]);
@@ -53,9 +54,28 @@ function App() {
     setActiveTab(newValue);
   };
 
+  function onMerge() {
+    const mergedItems = expenses.filter(items => checkedItems.has(items.id))
+    console.log(mergedItems)
+  }
+
   const expensesForDisplay = useMemo(() => {
     return expenses.filter((expense) => expense.isArchived === Boolean(activeTab));
   }, [activeTab, expenses]);
+
+  function setIsChecked(id: string): () => void {
+    return () => {
+      setCheckedItems((items) => {
+        const updatedItems = new Set(items);
+        if (items.has(id)) {
+          updatedItems.delete(id);
+          return updatedItems;
+        } else {
+          return updatedItems.add(id);
+        }
+      });
+    };
+  }
 
   return (
     <ThemeProvider theme={darkTheme}>
@@ -72,11 +92,25 @@ function App() {
           </Tabs>
           <Stack direction={'column'} flex={1} justifyContent={activeTab ? 'space-between' : 'space-around'}>
             {expensesForDisplay.map((expense) => (
-              <ExpenseSummary expense={expense} key={expense.id} updateExpense={getUpdateExpense(expense.id)} deleteExpense={getDeleteExpense(expense.id)} activeTab={activeTab} />
+              <ExpenseSummary
+                isChecked={checkedItems.has(expense.id)}
+                setIsChecked={setIsChecked(expense.id)}
+                expense={expense}
+                key={expense.id}
+                updateExpense={getUpdateExpense(expense.id)}
+                deleteExpense={getDeleteExpense(expense.id)}
+                activeTab={activeTab}
+              />
             ))}
+
             {activeTab === ActiveTab.Expenses && (
-              <Stack direction={'row'} justifyContent={'center'}>
-                <Button variant='contained' onClick={() => setDialogOpen(true)} data-testid='add-expense'>
+              <Stack direction={'column'} justifyContent={'center'} alignItems={'center'} gap={2} width={200} alignSelf={'center'}>
+                {checkedItems.size > 1 && (
+                  <Button variant='contained' onClick={onMerge} fullWidth color='secondary'>
+                    Merge Expenses
+                  </Button>
+                )}
+                <Button variant='contained' onClick={() => setDialogOpen(true)} data-testid='add-expense' fullWidth>
                   Add Expense
                 </Button>
               </Stack>
